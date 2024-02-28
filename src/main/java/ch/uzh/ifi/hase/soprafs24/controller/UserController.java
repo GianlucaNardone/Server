@@ -57,10 +57,9 @@ public class UserController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody UserPostDTO loginUser) {
-    User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(loginUser);
+  public ResponseEntity<?> login(@RequestBody User loginUser) {
 
-    User authenticatedUser = userService.checkUserCredentials(userInput);
+    User authenticatedUser = userService.checkUserCredentials(loginUser);
 
     if (authenticatedUser != null) {
             // If authentication is successful
