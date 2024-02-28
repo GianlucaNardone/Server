@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 /**
  * User Controller
@@ -53,5 +54,22 @@ public class UserController {
     User createdUser = userService.createUser(userInput);
     // convert internal representation of user back to API
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody UserPostDTO loginUser) {
+    User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(loginUser);
+
+    User authenticatedUser = userService.checkUserCredentials(userInput);
+
+    if (authenticatedUser != null) {
+            // If authentication is successful
+            // Return the authenticated user or any necessary information
+    return ResponseEntity.ok(authenticatedUser);
+    } else {
+            // If authentication fails (credentials are invalid)
+            // Return a 401 Unauthorized response
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+    }
   }
 }

@@ -35,6 +35,16 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
+  public User checkUserCredentials(User loginUser) {
+    User existingUser = userRepository.findByUsername(loginUser.getUsername());
+
+    if (existingUser != null && loginUser.getName().equals(existingUser.getName())) {
+      return existingUser; // Credentials are valid
+    } else {
+      return null;
+    }
+  }
+
   public List<User> getUsers() {
     return this.userRepository.findAll();
   }
@@ -42,6 +52,7 @@ public class UserService {
   public User createUser(User newUser) {
     newUser.setToken(UUID.randomUUID().toString());
     newUser.setStatus(UserStatus.OFFLINE);
+
     checkIfUserExists(newUser);
     // saves the given entity but data is only persisted in the database once
     // flush() is called
@@ -69,11 +80,11 @@ public class UserService {
     String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
     if (userByUsername != null && userByName != null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          String.format(baseErrorMessage, "username and the name", "are"));
+          String.format(baseErrorMessage, "username and the password", "are"));
     } else if (userByUsername != null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
     } else if (userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "password", "is"));
     }
   }
 }
