@@ -56,6 +56,25 @@ public class UserController {
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
 
+  @GetMapping("/user/{userId}")
+  @ResponseStatus(HttpStatus.OK)
+  @ResponseBody
+  public ResponseEntity<UserGetDTO> getUserById(@PathVariable Long userId) {
+    // Fetch the user by ID
+    User user = userService.getUserById(userId);
+    
+    // If user not found, return a 404 Not Found response
+    if (user == null) {
+      return ResponseEntity.notFound().build();
+    }
+    
+    // Convert the user to DTO
+    UserGetDTO userGetDTO = DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    
+    // Return the DTO in the response body with status 200 OK
+    return ResponseEntity.ok(userGetDTO);
+  }
+
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody User loginUser) {
 

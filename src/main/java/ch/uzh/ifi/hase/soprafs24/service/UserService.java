@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 /**
  * User Service
@@ -40,6 +41,16 @@ public class UserService {
 
     if (existingUser != null && loginUser.getName().equals(existingUser.getName())) {
       return existingUser; // Credentials are valid
+    } else {
+      return null;
+    }
+  }
+
+  public User getUserById(Long userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    User foundUser = optionalUser.orElse(null);
+    if (foundUser != null){
+      return foundUser;
     } else {
       return null;
     }
