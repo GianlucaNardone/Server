@@ -40,6 +40,7 @@ public class UserService {
     User existingUser = userRepository.findByUsername(loginUser.getUsername());
 
     if (existingUser != null && loginUser.getName().equals(existingUser.getName())) {
+      existingUser.setStatus(UserStatus.ONLINE);
       return existingUser; // Credentials are valid
     } else {
       return null;

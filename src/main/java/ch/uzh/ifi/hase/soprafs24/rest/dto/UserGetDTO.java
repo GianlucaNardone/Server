@@ -8,7 +8,7 @@ public class UserGetDTO {
   private String name;
   private String username;
   private UserStatus status;
-  private LocalDate creation_date;
+  private LocalDate creationDate;
 
   public Long getId() {
     return id;
@@ -43,11 +43,11 @@ public class UserGetDTO {
   }
 
   public LocalDate getCreationDate() {
-    return creation_date;
+    return creationDate;
   }
 
-  public void setCreationDate(LocalDate creation_date) {
-    this.creation_date = creation_date;
+  public void setCreationDate(LocalDate creationDate) {
+    this.creationDate = creationDate;
   }
 
 }
