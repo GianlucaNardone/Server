@@ -57,14 +57,12 @@ public class UserService {
     }
   }
 
-  public User updateUserStatus(String token) {
-    // Fetch the user by ID from the repository
-    User tokenUser = userRepository.findByToken(token);
-
-    if (tokenUser != null) {
+  public User updateUserStatus(User usernameUser) {
+    User statusUser = userRepository.findByUsername(usernameUser.getUsername());
+    if (statusUser != null) {
         // Update the user's status
-        tokenUser.setStatus(UserStatus.OFFLINE);
-        return tokenUser;
+        statusUser.setStatus(UserStatus.OFFLINE);
+        return statusUser;
     } else {
         return null; // User not found
     }
