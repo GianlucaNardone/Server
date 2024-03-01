@@ -90,4 +90,22 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
     }
   }
+
+  @PutMapping("/logout")
+  public ResponseEntity<?> logout(@RequestHeader("Authorization") String authToken) {
+    // Extract the token from the Authorization header
+    String token = authToken.substring("Bearer ".length());
+
+    System.out.println("Received token: " + token);
+
+    User statusUser = userService.updateUserStatus(token);
+
+    // Check if the user was successfully updated
+    if (statusUser != null) {
+      return ResponseEntity.ok().build();
+    } else {
+        // User not found, return 404 Not Found error
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+  }
 }

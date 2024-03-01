@@ -57,13 +57,26 @@ public class UserService {
     }
   }
 
+  public User updateUserStatus(String token) {
+    // Fetch the user by ID from the repository
+    User tokenUser = userRepository.findByToken(token);
+
+    if (tokenUser != null) {
+        // Update the user's status
+        tokenUser.setStatus(UserStatus.OFFLINE);
+        return tokenUser;
+    } else {
+        return null; // User not found
+    }
+  }
+
   public List<User> getUsers() {
     return this.userRepository.findAll();
   }
 
   public User createUser(User newUser) {
     newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
+    newUser.setStatus(UserStatus.ONLINE);
     newUser.setCreationDate(LocalDate.now());
     checkIfUserExists(newUser);
     // saves the given entity but data is only persisted in the database once
