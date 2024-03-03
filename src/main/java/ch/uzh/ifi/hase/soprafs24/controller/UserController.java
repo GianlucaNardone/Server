@@ -92,8 +92,8 @@ public class UserController {
   }
 
   @PutMapping("/logout")
-  public ResponseEntity<?> logout(@RequestBody User usernameUser) {
-    User statusUser = userService.updateUserStatus(usernameUser);
+  public ResponseEntity<?> logout(@RequestBody User userId) {
+    User statusUser = userService.updateUserStatus(userId);
 
     // Check if the user was successfully updated
     if (statusUser != null) {

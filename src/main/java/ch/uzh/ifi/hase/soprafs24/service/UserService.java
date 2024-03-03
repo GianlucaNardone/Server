@@ -57,8 +57,9 @@ public class UserService {
     }
   }
 
-  public User updateUserStatus(User usernameUser) {
-    User statusUser = userRepository.findByUsername(usernameUser.getUsername());
+  public User updateUserStatus(User userId) {
+    Optional<User> optionalUser = userRepository.findById(userId.getId());
+    User statusUser = optionalUser.orElse(null);
     if (statusUser != null) {
         // Update the user's status
         statusUser.setStatus(UserStatus.OFFLINE);
