@@ -9,6 +9,7 @@ public class UserGetDTO {
   private String username;
   private UserStatus status;
   private LocalDate creationDate;
+  private LocalDate birthday;
 
   public Long getId() {
     return id;
@@ -48,6 +49,14 @@ public class UserGetDTO {
 
   public void setCreationDate(LocalDate creationDate) {
     this.creationDate = creationDate;
+  }
+
+  public LocalDate getBirthday() {
+    return birthday;
+  }
+
+  public void setBirthday(LocalDate birthday) {
+    this.birthday = birthday;
   }
 
 }

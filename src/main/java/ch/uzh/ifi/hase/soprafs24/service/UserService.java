@@ -57,15 +57,28 @@ public class UserService {
     }
   }
 
+  public User updateUserById(Long Id, String newUsername, LocalDate newBirthday) {
+    Optional<User> optionalUser = userRepository.findById(Id);
+    User userToUpdate = optionalUser.orElse(null);
+
+    if (userToUpdate == null) {
+      return null;
+    }
+    userToUpdate.setUsername(newUsername);
+    userToUpdate.setBirthday(newBirthday);
+    
+    return userRepository.save(userToUpdate);
+  }
+
   public User updateUserStatus(User userId) {
     Optional<User> optionalUser = userRepository.findById(userId.getId());
     User statusUser = optionalUser.orElse(null);
     if (statusUser != null) {
-        // Update the user's status
-        statusUser.setStatus(UserStatus.OFFLINE);
-        return statusUser;
+      // Update the user's status
+      statusUser.setStatus(UserStatus.OFFLINE);
+      return statusUser;
     } else {
-        return null; // User not found
+      return null; // User not found
     }
   }
 

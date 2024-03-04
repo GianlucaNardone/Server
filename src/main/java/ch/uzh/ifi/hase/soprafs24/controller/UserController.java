@@ -56,7 +56,7 @@ public class UserController {
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
 
-  @GetMapping("/user/{userId}")
+  @GetMapping("/users/{userId}")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public ResponseEntity<UserGetDTO> getUserById(@PathVariable Long userId) {
@@ -100,7 +100,22 @@ public class UserController {
       return ResponseEntity.ok().build();
     } else {
         // User not found, return 404 Not Found error
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found!");
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found!");
     }
+  }
+
+  @PutMapping("/users/{userId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseBody
+  public ResponseEntity<?> updateUserbyId(@PathVariable Long userId, @RequestBody User request) {
+
+    User userToUpdate = userService.updateUserById(userId, request.getUsername(), request.getBirthday());
+    
+    // If user not found, return a 404 Not Found response
+    if (userToUpdate == null) {
+      return ResponseEntity.notFound().build();
+    }
+        
+    return ResponseEntity.noContent().build();  
   }
 }

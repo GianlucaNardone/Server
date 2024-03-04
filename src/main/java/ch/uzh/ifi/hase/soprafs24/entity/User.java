@@ -33,7 +33,10 @@ public class User implements Serializable {
   private String username;
 
   @Column(nullable = false)
-  private LocalDate creation_date;
+  private LocalDate creationDate;
+
+  @Column(nullable = true)
+  private LocalDate birthday;
 
   @Column(nullable = false, unique = true)
   private String token;
@@ -66,11 +69,19 @@ public class User implements Serializable {
   }
 
   public LocalDate getCreationDate() {
-    return creation_date;
+    return creationDate;
   }
 
-  public void setCreationDate(LocalDate creation_date) {
-    this.creation_date = creation_date;
+  public void setCreationDate(LocalDate creationDate) {
+    this.creationDate = creationDate;
+  }
+  
+  public LocalDate getBirthday() {
+    return birthday;
+  }
+
+  public void setBirthday(LocalDate birthday) {
+    this.birthday = birthday;
   }
 
   public String getToken() {
