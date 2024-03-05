@@ -60,7 +60,6 @@ public class UserController {
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public ResponseEntity<UserGetDTO> getUserById(@PathVariable Long userId) {
-    // Fetch the user by ID
     User user = userService.getUserById(userId);
     
     // If user not found, return a 404 Not Found response
@@ -81,13 +80,10 @@ public class UserController {
     User authenticatedUser = userService.checkUserCredentials(loginUser);
 
     if (authenticatedUser != null) {
-            // If authentication is successful
-            // Return the authenticated user or any necessary information
-    return ResponseEntity.ok(authenticatedUser);
+      return ResponseEntity.ok(authenticatedUser);
     } else {
-            // If authentication fails (credentials are invalid)
-            // Return a 401 Unauthorized response
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+      // Return a 401 Unauthorized response
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
     }
   }
 
@@ -99,8 +95,8 @@ public class UserController {
     if (statusUser != null) {
       return ResponseEntity.ok().build();
     } else {
-        // User not found, return 404 Not Found error
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found!");
+      // User not found, return 404 Not Found error
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found!");
     }
   }
 
@@ -115,7 +111,7 @@ public class UserController {
     if (userToUpdate == null) {
       return ResponseEntity.notFound().build();
     }
-        
+    // If user found, return a 204 No Content response    
     return ResponseEntity.noContent().build();  
   }
 }

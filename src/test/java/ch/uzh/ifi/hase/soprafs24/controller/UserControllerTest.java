@@ -19,12 +19,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
+import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,6 +52,9 @@ public class UserControllerTest {
     user.setName("Firstname Lastname");
     user.setUsername("firstname@lastname");
     user.setStatus(UserStatus.OFFLINE);
+    user.setCreationDate(LocalDate.parse("2024-03-05"));
+    user.setBirthday(null);
+
 
     List<User> allUsers = Collections.singletonList(user);
 
@@ -65,7 +70,9 @@ public class UserControllerTest {
         .andExpect(jsonPath("$", hasSize(1)))
         .andExpect(jsonPath("$[0].name", is(user.getName())))
         .andExpect(jsonPath("$[0].username", is(user.getUsername())))
-        .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
+        .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())))
+        .andExpect(jsonPath("$[0].creationDate", is(user.getCreationDate().toString())))
+        .andExpect(jsonPath("$[0].birthday", is(user.getBirthday())));
   }
 
   @Test
@@ -77,6 +84,8 @@ public class UserControllerTest {
     user.setUsername("testUsername");
     user.setToken("1");
     user.setStatus(UserStatus.ONLINE);
+    user.setCreationDate(LocalDate.parse("2024-03-05"));
+    user.setBirthday(null);
 
     UserPostDTO userPostDTO = new UserPostDTO();
     userPostDTO.setName("Test User");
@@ -95,7 +104,134 @@ public class UserControllerTest {
         .andExpect(jsonPath("$.id", is(user.getId().intValue())))
         .andExpect(jsonPath("$.name", is(user.getName())))
         .andExpect(jsonPath("$.username", is(user.getUsername())))
-        .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+        .andExpect(jsonPath("$.status", is(user.getStatus().toString())))
+        .andExpect(jsonPath("$.creationDate", is(user.getCreationDate().toString())))
+        .andExpect(jsonPath("$.birthday", is(user.getBirthday())));
+  }
+
+  @Test
+  public void createUser_invalidInput_raiseError() throws Exception {
+    // given
+    User existingUser = new User();
+    existingUser.setId(1L);
+    existingUser.setName("Existing User");
+    existingUser.setUsername("existingUsername");
+
+    UserPostDTO userPostDTO = new UserPostDTO();
+    userPostDTO.setName("Existing User");
+    userPostDTO.setUsername("existingUsername");
+
+    given(userService.createUser(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.CONFLICT));
+
+    // when/then -> do the request + validate the result
+    MockHttpServletRequestBuilder postRequest = post("/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(userPostDTO));
+
+    // then
+    mockMvc.perform(postRequest)
+        .andExpect(status().isConflict());
+  }
+
+  @Test
+  public void getUserById_existingUserId_userReturned() throws Exception {
+    // given
+    User user = new User();
+    user.setId(1L);
+    user.setName("Test User");
+    user.setUsername("testUsername");
+    user.setToken("1");
+    user.setStatus(UserStatus.ONLINE);
+    user.setCreationDate(LocalDate.parse("2024-03-05"));
+    user.setBirthday(null);
+  
+    given(userService.getUserById(Mockito.any())).willReturn(user);
+  
+    // when/then -> do the request + validate the result
+    mockMvc.perform(get("/users/{userId}", 1L)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+        .andExpect(jsonPath("$.name", is(user.getName())))
+        .andExpect(jsonPath("$.username", is(user.getUsername())))
+        .andExpect(jsonPath("$.status", is(user.getStatus().toString())))
+        .andExpect(jsonPath("$.creationDate", is(user.getCreationDate().toString())))
+        .andExpect(jsonPath("$.birthday", is(user.getBirthday())));
+  }
+
+  @Test
+  public void getUserById_nonExistingUserId_raiseError() throws Exception {
+    // given
+    User user = new User();
+    user.setId(1L);
+    user.setName("Test User");
+    user.setUsername("testUsername");
+    user.setToken("1");
+    user.setStatus(UserStatus.ONLINE);
+    user.setCreationDate(LocalDate.parse("2024-03-05"));
+    user.setBirthday(null);
+  
+    given(userService.getUserById(Mockito.any())).willReturn(null);
+  
+    // when/then -> do the request + validate the result
+    mockMvc.perform(get("/users/{userId}", 1L)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+@Test
+  public void updateUserById_existingUserId_noContentReturned() throws Exception {
+
+    User user = new User();
+    user.setId(1L);
+    user.setName("Test User");
+    user.setUsername("testUsername");
+    user.setToken("1");
+    user.setStatus(UserStatus.ONLINE);
+    user.setCreationDate(LocalDate.parse("2024-03-05"));
+    user.setBirthday(null);
+
+    User putBody = new User();
+    putBody.setUsername("testUsername");
+    putBody.setBirthday(null);
+
+    // given that the user exists and is successfully updated
+    given(userService.updateUserById(Mockito.any(), Mockito.any(), Mockito.any())).willReturn(user);
+    
+    MockHttpServletRequestBuilder putRequest = put("/users/{userId}", 1L)
+    .contentType(MediaType.APPLICATION_JSON)
+    .content(asJsonString(putBody));
+
+    // when/then -> do the request + validate the result
+    mockMvc.perform(putRequest)
+        .andExpect(status().isNoContent());
+  }
+
+@Test
+  public void updateUserById_nonExistingUserId_raiseError() throws Exception {
+
+    User user = new User();
+    user.setId(1L);
+    user.setName("Test User");
+    user.setUsername("testUsername");
+    user.setToken("1");
+    user.setStatus(UserStatus.ONLINE);
+    user.setCreationDate(LocalDate.parse("2024-03-05"));
+    user.setBirthday(null);
+
+    User putBody = new User();
+    putBody.setUsername("testUsername");
+    putBody.setBirthday(null);
+
+    given(userService.updateUserById(Mockito.any(), Mockito.any(), Mockito.any())).willReturn(null);
+    
+    MockHttpServletRequestBuilder putRequest = put("/users/{userId}", 1L)
+    .contentType(MediaType.APPLICATION_JSON)
+    .content(asJsonString(putBody));
+
+    // when/then -> do the request + validate the result
+    mockMvc.perform(putRequest)
+        .andExpect(status().isNotFound());
   }
 
   /**
