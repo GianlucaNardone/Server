@@ -64,9 +64,13 @@ public class UserService {
     if (userToUpdate == null) {
       return null;
     }
-    userToUpdate.setUsername(newUsername);
-    userToUpdate.setBirthday(newBirthday);
-    
+
+    if (newUsername != "") {
+      userToUpdate.setUsername(newUsername);
+    }
+    if (newBirthday != null) {
+      userToUpdate.setBirthday(newBirthday);
+    }
     return userRepository.save(userToUpdate);
   }
 
